@@ -1,31 +1,43 @@
-# Streamlitライブラリをインポート
 import streamlit as st
 
-# ページ設定（タブに表示されるタイトル、表示幅）
-st.set_page_config(page_title="タイトル", layout="wide")
+# 分別ルールの辞書
+garbage_categories = {
+    "紙": "資源ごみ",
+    "段ボール": "資源ごみ",
+    "ペットボトル": "資源ごみ",
+    "アルミ缶": "資源ごみ",
+    "ガラス瓶": "資源ごみ",
+    "プラスチック": "資源ごみ",
+    "食べ残し": "燃えるごみ",
+    "野菜くず": "燃えるごみ",
+    "肉骨": "燃えるごみ",
+    "ティッシュ": "燃えるごみ",
+    "電子機器": "燃えないごみ",
+    "金属": "燃えないごみ",
+    "電池": "燃えないごみ",
+    "ガラス": "燃えないごみ",
+    "石": "燃えないごみ",
+    "割れた食器": "燃えないごみ",
+    "タバコの吸い殻": "燃えないごみ",
+}
 
-# タイトルを設定
-st.title('Streamlitのサンプルアプリ')
+# タイトル
+st.title("ごみの分別アプリ")
 
-# テキスト入力ボックスを作成し、ユーザーからの入力を受け取る
-user_input = st.text_input('あなたの名前を入力してください')
+# アイテム名を入力させる
+item = st.text_input("分別したいごみのアイテム名を入力してください:")
 
-# ボタンを作成し、クリックされたらメッセージを表示
-if st.button('挨拶する'):
-    if user_input:  # 名前が入力されているかチェック
-        st.success(f'🌟 こんにちは、{user_input}さん! 🌟')  # メッセージをハイライト
+# アイテムが入力された場合
+if item:
+    # 分別の判断
+    item_lower = item.lower()
+    found_category = None
+    for key in garbage_categories:
+        if key.lower() in item_lower:
+            found_category = garbage_categories[key]
+            break
+    
+    if found_category:
+        st.success(f"「{item}」は「{found_category}」に分類されます。")
     else:
-        st.error('名前を入力してください。')  # エラーメッセージを表示
-
-# スライダーを作成し、値を選択
-number = st.slider('好きな数字（10進数）を選んでください', 0, 100)
-
-# 補足メッセージ
-st.caption("十字キー（左右）でも調整できます。")
-
-# 選択した数字を表示
-st.write(f'あなたが選んだ数字は「{number}」です。')
-
-# 選択した数値を2進数に変換
-binary_representation = bin(number)[2:]  # 'bin'関数で2進数に変換し、先頭の'0b'を取り除く
-st.info(f'🔢 10進数の「{number}」を2進数で表現すると「{binary_representation}」になります。 🔢')  # 2進数の表示をハイライト
+        st.error(f"「{item}」の分類が見つかりませんでした。")
