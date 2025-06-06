@@ -1,5 +1,5 @@
 python -m venv venv
-source venv/bin/activate  # Windowsなら venv\Scripts\activate
+source venv/Scripts/activate  # Windowsなら venv\Scripts\activate
 pip install flask
 
 from flask import Flask, render_template, request
