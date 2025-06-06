@@ -1,43 +1,70 @@
-import streamlit as st
+from flask import Flask, render_template, request
 
-# 分別ルールの辞書
-garbage_categories = {
-    "紙": "資源ごみ",
-    "段ボール": "資源ごみ",
+app = Flask(__name__)
+
+# ごみ分別データ例
+GOMI_DICT = {
     "ペットボトル": "資源ごみ",
-    "アルミ缶": "資源ごみ",
+    "生ごみ": "燃えるごみ",
+    "缶": "資源ごみ",
+    "古紙": "資源ごみ",
     "ガラス瓶": "資源ごみ",
-    "プラスチック": "資源ごみ",
-    "食べ残し": "燃えるごみ",
-    "野菜くず": "燃えるごみ",
-    "肉骨": "燃えるごみ",
-    "ティッシュ": "燃えるごみ",
-    "電子機器": "燃えないごみ",
-    "金属": "燃えないごみ",
-    "電池": "燃えないごみ",
-    "ガラス": "燃えないごみ",
-    "石": "燃えないごみ",
-    "割れた食器": "燃えないごみ",
-    "タバコの吸い殻": "燃えないごみ",
+    "電池": "有害ごみ",
 }
 
-# タイトル
-st.title("ごみの分別アプリ")
+@app.route('/')
+def index():
+    return render_template('index.html')
 
-# アイテム名を入力させる
-item = st.text_input("分別したいごみのアイテム名を入力してください:")
+@app.route('/bunbetsu', methods=['GET', 'POST'])
+def bunbetsu():
+    result = None
+    if request.method == 'POST':
+        item = request.form.get('item')
+        result = GOMI_DICT.get(item, "ごみの種類が登録されていません。")
+    return render_template('bunbetsu.html', result=result)
 
-# アイテムが入力された場合
-if item:
-    # 分別の判断
-    item_lower = item.lower()
-    found_category = None
-    for key in garbage_categories:
-        if key.lower() in item_lower:
-            found_category = garbage_categories[key]
-            break
-    
-    if found_category:
-        st.success(f"「{item}」は「{found_category}」に分類されます。")
-    else:
-        st.error(f"「{item}」の分類が見つかりませんでした。")
+if __name__ == '__main__':
+    app.run(debug=True)
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ごみ分別アプリ</title>
+    <style>
+        .button {
+            width: 200px;
+            height: 100px;
+            font-size: 24px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            margin: 50px auto;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <button class="button" onclick="location.href='/bunbetsu'">ごみの分別</button>
+</body>
+</html>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ごみの分別ページ</title>
+</head>
+<body>
+    <h1>ごみの種類を入力してください</h1>
+    <form method="POST">
+        <input type="text" name="item" placeholder="例：ペットボトル" required>
+        <button type="submit">調べる</button>
+    </form>
+
+    {% if result %}
+    <h2>結果: {{ result }}</h2>
+    {% endif %}
+
+    <button onclick="location.href='/'">戻る</button>
+</body>
+</html>
