@@ -72,25 +72,9 @@ def main():
     if 'page' not in st.session_state:
         st.session_state.page = 'home'
     
-    # サイドバーでナビゲーション
-    st.sidebar.title("ナビゲーション")
-    page_options = {
-        'home': 'ホーム',
-        'page1': 'ページ1',
-        'page2': 'ページ2'
-    }
+  
     
-    selected_page = st.sidebar.selectbox(
-        "ページを選択",
-        options=list(page_options.keys()),
-        format_func=lambda x: page_options[x],
-        index=list(page_options.keys()).index(st.session_state.page)
-    )
-    
-    # サイドバーで選択されたページに移動
-    if selected_page != st.session_state.page:
-        st.session_state.page = selected_page
-        st.rerun()
+
     
     # 現在のページ表示
     if st.session_state.page == 'home':
