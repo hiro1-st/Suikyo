@@ -79,4 +79,4 @@ def main():
     elif st.session_state.page == 'page2':
         show_page2()
 
-if __name__ == "__main__":if
+if __name__ == "__main__":
