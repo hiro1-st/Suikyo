@@ -1,5 +1,7 @@
-# main.py
 import streamlit as st
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 
 # ページ関数を同一ファイル内で定義
 def show_page1():
@@ -8,8 +10,6 @@ def show_page1():
     
     # サンプルコンテンツ
     st.subheader("データ表示例")
-    import pandas as pd
-    import numpy as np
     
     data = pd.DataFrame({
         'カテゴリ': ['A', 'B', 'C', 'D'],
@@ -20,7 +20,7 @@ def show_page1():
     
     if st.button("ホームに戻る", key="page1_home"):
         st.session_state.page = 'home'
-        st.rerun()
+        st.experimental_rerun()  # 別の方法でページを更新
 
 def show_page2():
     st.title("ページ2")
@@ -36,7 +36,6 @@ def show_page2():
         st.success(f"こんにちは、{name}さん！ {age}歳ですね。")
     
     # グラフ例
-    import matplotlib.pyplot as plt
     x = np.linspace(0, 10, 100)
     y = np.sin(x) * age / 25  # 年齢に応じて振幅を変更
     
@@ -47,7 +46,7 @@ def show_page2():
     
     if st.button("ホームに戻る", key="page2_home"):
         st.session_state.page = 'home'
-        st.rerun()
+        st.experimental_rerun()  # 別の方法でページを更新
 
 def show_home():
     st.title("ホームページ")
@@ -58,39 +57,19 @@ def show_home():
     with col1:
         if st.button("📊 ページ1へ", key="goto_page1"):
             st.session_state.page = 'page1'
-            st.rerun()
+            st.experimental_rerun()
         st.write("データ可視化のページ")
     
     with col2:
         if st.button("🎯 ページ2へ", key="goto_page2"):
             st.session_state.page = 'page2'
-            st.rerun()
+            st.experimental_rerun()
         st.write("インタラクティブなページ")
 
 def main():
     # ページ状態の初期化
     if 'page' not in st.session_state:
         st.session_state.page = 'home'
-    
-    # サイドバーでナビゲーション
-    st.sidebar.title("ナビゲーション")
-    page_options = {
-        'home': 'ホーム',
-        'page1': 'ページ1',
-        'page2': 'ページ2'
-    }
-    
-    selected_page = st.sidebar.selectbox(
-        "ページを選択",
-        options=list(page_options.keys()),
-        format_func=lambda x: page_options[x],
-        index=list(page_options.keys()).index(st.session_state.page)
-    )
-    
-    # サイドバーで選択されたページに移動
-    if selected_page != st.session_state.page:
-        st.session_state.page = selected_page
-        st.rerun()
     
     # 現在のページ表示
     if st.session_state.page == 'home':
@@ -101,4 +80,3 @@ def main():
         show_page2()
 
 if __name__ == "__main__":
-    main()
