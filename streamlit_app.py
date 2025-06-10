@@ -1,15 +1,15 @@
-# main.py
+# streamlit_app.py
 import streamlit as st
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 
-# ページ関数を同一ファイル内で定義
 def show_page1():
     st.title("ページ1")
     st.write("これはページ1のコンテンツです。")
     
-    # サンプルコンテンツ
+    # ここに st.subheader を配置（関数内なのでOK）
     st.subheader("データ表示例")
-    import pandas as pd
-    import numpy as np
     
     data = pd.DataFrame({
         'カテゴリ': ['A', 'B', 'C', 'D'],
@@ -26,7 +26,7 @@ def show_page2():
     st.title("ページ2")
     st.write("これはページ2のコンテンツです。")
     
-    # サンプルコンテンツ
+    # ここに st.subheader を配置（関数内なのでOK）
     st.subheader("インタラクティブ要素")
     
     name = st.text_input("お名前を入力してください")
@@ -36,9 +36,8 @@ def show_page2():
         st.success(f"こんにちは、{name}さん！ {age}歳ですね。")
     
     # グラフ例
-    import matplotlib.pyplot as plt
     x = np.linspace(0, 10, 100)
-    y = np.sin(x) * age / 25  # 年齢に応じて振幅を変更
+    y = np.sin(x) * age / 25
     
     fig, ax = plt.subplots()
     ax.plot(x, y)
@@ -58,47 +57,59 @@ def show_home():
     with col1:
         if st.button("📊 ページ1へ", key="goto_page1"):
             st.session_state.page = 'page1'
-            st.rerun()
+            st.rerun()  # この st.rerun() も関数内なのでOK
         st.write("データ可視化のページ")
     
     with col2:
         if st.button("🎯 ページ2へ", key="goto_page2"):
             st.session_state.page = 'page2'
-            st.rerun()
+            st.rerun()  # この st.rerun() も関数内なのでOK
         st.write("インタラクティブなページ")
 
 def main():
+    # ページ設定（アプリの最初に一度だけ実行）
+    st.set_page_config(
+        page_title="マルチページアプリ",
+        page_icon="🚀",
+        layout="wide"
+    )
+    
     # ページ状態の初期化
     if 'page' not in st.session_state:
         st.session_state.page = 'home'
     
     # サイドバーでナビゲーション
-    st.sidebar.title("ナビゲーション")
-    page_options = {
-        'home': 'ホーム',
-        'page1': 'ページ1',
-        'page2': 'ページ2'
-    }
+    with st.sidebar:
+        st.title("🧭 ナビゲーション")
+        
+        # 現在のページを表示
+        st.info(f"現在のページ: {st.session_state.page}")
+        
+        # ページ選択ボタン
+        if st.button("🏠 ホーム", key="nav_home"):
+            st.session_state.page = 'home'
+            st.rerun()
+        
+        if st.button("📊 ページ1", key="nav_page1"):
+            st.session_state.page = 'page1'
+            st.rerun()
+        
+        if st.button("🎯 ページ2", key="nav_page2"):
+            st.session_state.page = 'page2'
+            st.rerun()
     
-    selected_page = st.sidebar.selectbox(
-        "ページを選択",
-        options=list(page_options.keys()),
-        format_func=lambda x: page_options[x],
-        index=list(page_options.keys()).index(st.session_state.page)
-    )
-    
-    # サイドバーで選択されたページに移動
-    if selected_page != st.session_state.page:
-        st.session_state.page = selected_page
-        st.rerun()
-    
-    # 現在のページ表示
+    # 現在のページに応じて表示
     if st.session_state.page == 'home':
         show_home()
     elif st.session_state.page == 'page1':
         show_page1()
     elif st.session_state.page == 'page2':
         show_page2()
+    else:
+        # 不正なページの場合はホームに戻す
+        st.session_state.page = 'home'
+        st.rerun()
 
+# メイン実行部分
 if __name__ == "__main__":
     main()
