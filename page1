@@ -20,3 +20,5 @@ def show():
     if st.button("ホームに戻る", key="page1_home"):
         st.session_state.page = 'home'
         st.rerun()
+
+https://prod.liveshare.vsengsaas.visualstudio.com/join?D3ACF87ECF5ECCC63D077CC34B92F291A210
