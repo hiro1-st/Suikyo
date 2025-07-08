@@ -1,17 +1,29 @@
 import streamlit as st
+import sys
 
-# セッション状態の初期化
-if 'current_page' not in st.session_state:
-    st.session_state.current_page = 'home'
+# Streamlitの動作確認
+try:
+    # セッション状態の初期化
+    if 'current_page' not in st.session_state:
+        st.session_state.current_page = 'home'
+except Exception as e:
+    st.error(f"セッション状態の初期化エラー: {e}")
+    st.error("このアプリは 'streamlit run filename.py' で実行してください")
+    st.stop()
 
 # ページ遷移関数
 def navigate_to(page_name):
-    st.session_state.current_page = page_name
-    st.rerun()
+    try:
+        st.session_state.current_page = page_name
+        st.rerun()
+    except Exception as e:
+        st.error(f"ページ遷移エラー: {e}")
 
 # ホームページ
 def home_page():
     st.title("ホームページ")
+    
+    st.info("各ボタンをクリックして異なるページに移動できます")
     
     # 4つのボタンを2つずつ縦並びで表示
     col1, col2 = st.columns(2)
@@ -77,15 +89,18 @@ def page3():
     st.write("これはページ3の内容です。")
     
     # チャート例
-    import pandas as pd
-    import numpy as np
-    
-    chart_data = pd.DataFrame(
-        np.random.randn(20, 3),
-        columns=['A', 'B', 'C']
-    )
-    
-    st.line_chart(chart_data)
+    try:
+        import pandas as pd
+        import numpy as np
+        
+        chart_data = pd.DataFrame(
+            np.random.randn(20, 3),
+            columns=['A', 'B', 'C']
+        )
+        
+        st.line_chart(chart_data)
+    except ImportError:
+        st.warning("チャートの表示にはpandasとnumpyが必要です")
     
     col1, col2 = st.columns(2)
     with col1:
@@ -128,17 +143,27 @@ if st.sidebar.button("ページ3"):
 if st.sidebar.button("設定"):
     navigate_to('settings')
 
-# 現在のページに応じて表示する内容を切り替え
-if st.session_state.current_page == 'home':
-    home_page()
-elif st.session_state.current_page == 'page1':
-    page1()
-elif st.session_state.current_page == 'page2':
-    page2()
-elif st.session_state.current_page == 'page3':
-    page3()
-elif st.session_state.current_page == 'settings':
-    settings_page()
-else:
-    # 不明なページの場合はホームに戻る
-    navigate_to('home')
+# メイン実行部分
+def main():
+    try:
+        # 現在のページに応じて表示する内容を切り替え
+        if st.session_state.current_page == 'home':
+            home_page()
+        elif st.session_state.current_page == 'page1':
+            page1()
+        elif st.session_state.current_page == 'page2':
+            page2()
+        elif st.session_state.current_page == 'page3':
+            page3()
+        elif st.session_state.current_page == 'settings':
+            settings_page()
+        else:
+            # 不明なページの場合はホームに戻る
+            navigate_to('home')
+    except Exception as e:
+        st.error(f"アプリケーションエラー: {e}")
+        st.error("ページの読み込みに失敗しました")
+
+# アプリケーションの実行
+if __name__ == "__main__":
+    main()
